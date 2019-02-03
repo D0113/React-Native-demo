@@ -6,13 +6,14 @@ import {
     TouchableHighlight,
     TouchableNativeFeedback,
     TouchableOpacity,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    Dimensions
 } from 'react-native';
 
 export default class extends React.Component {
 
     onPressButton() {
-        Alert.alert('bam cc');
+        Alert.alert('window ' + Dimensions.get('window').height, 'screen ' + Dimensions.get('screen').height);
     }
 
     render() {
