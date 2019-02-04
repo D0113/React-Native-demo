@@ -101,7 +101,7 @@ export default class extends Component {
                             imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUB25wJWlYSokzNLpvjkOkhds9o3iKI26IBT82kx3itReGPxN6',
                             description: this.state.newMovieDescription
                         };
-                        data.push(newMovie);
+                        data.unshift(newMovie);
 
                         this.props.parentFlatList.refeshFlatList(newId, true);
                         this.refs.myModal.close();

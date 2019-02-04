@@ -133,9 +133,9 @@ export default class extends Component {
             return { deletedRowKey: deletedKey };
         });
 
-        if (add) {
-            this.refs.flatList.scrollToEnd();
-        }
+        // if (add) {
+        //     this.refs.flatList.scrollToEnd();
+        // }
     }
 
     onPressAdd() {
@@ -166,6 +166,7 @@ export default class extends Component {
                 </View>
                 <View style={{ height: 1, backgroundColor: '#212121' }}></View>
                 <FlatList
+                    extraData={this.state}
                     ref={'flatList'}
                     data={db}
                     renderItem={({ item, index }) => {

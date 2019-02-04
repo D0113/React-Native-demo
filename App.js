@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import DmFlatList from './components/DmFlatList';
+import HorizontalFlatList from './components/HorizontalFlatList';
 
 export default class App extends React.Component {
   render() {
     return (
-       <DmFlatList />
+       <HorizontalFlatList />
     );
   }
 }
