@@ -11,6 +11,7 @@ import {
 import Swipeout from 'react-native-swipeout';
 
 import AddModal from './AddModal';
+import EditModal from './EditModal';
 
 import db from '../DB/db';
 import { create } from 'uuid-js';
@@ -21,13 +22,20 @@ class FlatListItems extends Component {
 
         this.state = {
             activeRowKey: null,
-            re: false
+            numRe: 0
         };
+        this.refeshFlatListItem = this.refeshFlatListItem.bind(this);
+    }
+
+    refeshFlatListItem() {
+        this.setState((preState) => {
+            return {numRe: preState.numRe + 1};
+        });
     }
 
     render() {
         const swipeoutSettings = {
-            backgroundColor: '#fb3d38',
+            backgroundColor: '#000a12',
             autoClose: true,
             onClose: (secId, rowId, direction) => {
                 if (this.state.activeRowKey) {
@@ -38,6 +46,16 @@ class FlatListItems extends Component {
                 this.setState({ activeRowKey: this.props.item.key });
             },
             right: [
+                {
+                    onPress: () => {
+                        // Alert.alert(
+                        //     'Update'
+                        // );
+                        this.props.parentFlatList.refs.editModal.showEditModal(db[this.props.index], this);
+                    },
+                    text: 'Edit',
+                    type: 'primary'
+                },
                 {
                     onPress: () => {
                         const deletingRow = this.state.activeRowKey;
@@ -58,7 +76,8 @@ class FlatListItems extends Component {
                     },
                     text: 'Delete',
                     type: 'delete'
-                }
+                },
+
             ],
             rowID: this.props.index,
             sectionID: 1
@@ -80,7 +99,7 @@ class FlatListItems extends Component {
                             <Text style={styles.flatlistItem}>{this.props.item.description}</Text>
                         </View>
                     </View>
-                    <View style={{ height: 1, backgroundColor: 'grey' }}></View>
+                    <View style={{ height: 1, backgroundColor: 'gray' }}></View>
                 </View>
             </Swipeout>
         );
@@ -109,12 +128,14 @@ export default class extends Component {
         this.onPressAdd = this.onPressAdd.bind(this);
     }
 
-    refeshFlatList = (deletedKey) => {
+    refeshFlatList = (deletedKey, add = false) => {
         this.setState(() => {
             return { deletedRowKey: deletedKey };
         });
 
-        this.refs.flatList.scrollToEnd();
+        if (add) {
+            this.refs.flatList.scrollToEnd();
+        }
     }
 
     onPressAdd() {
@@ -157,6 +178,9 @@ export default class extends Component {
                 <AddModal ref={'addModal'} parentFlatList={this}>
 
                 </AddModal>
+                <EditModal ref={'editModal'} parentFlatList={this}>
+
+                </EditModal>
             </View>
         );
     }
