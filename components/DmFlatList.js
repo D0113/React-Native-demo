@@ -10,16 +10,21 @@ import {
 } from 'react-native';
 import Swipeout from 'react-native-swipeout';
 
+import AddModal from './AddModal';
+
 import db from '../DB/db';
+import { create } from 'uuid-js';
 
 class FlatListItems extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            activeRowKey: null
+            activeRowKey: null,
+            re: false
         };
     }
+
     render() {
         const swipeoutSettings = {
             backgroundColor: '#fb3d38',
@@ -44,7 +49,7 @@ class FlatListItems extends Component {
                                 {
                                     text: 'Yes', onPress: () => {
                                         db.splice(this.props.index, 1);
-                                        this.props.refeshParentFlatlist(deletingRow);
+                                        this.props.parentFlatList.refeshFlatList(deletingRow);
                                     }
                                 }
                             ],
@@ -100,15 +105,22 @@ export default class extends Component {
         this.state = {
             deletedRowKey: null
         };
+
+        this.onPressAdd = this.onPressAdd.bind(this);
     }
 
     refeshFlatList = (deletedKey) => {
-        this.setState({ deletedRowKey: deletedKey });
+        this.setState(() => {
+            return { deletedRowKey: deletedKey };
+        });
+
+        this.refs.flatList.scrollToEnd();
     }
 
     onPressAdd() {
-        alert('Press add button');
+        this.refs.addModal.showAddModal();
     }
+
 
     render() {
         return (
@@ -133,14 +145,18 @@ export default class extends Component {
                 </View>
                 <View style={{ height: 1, backgroundColor: '#212121' }}></View>
                 <FlatList
+                    ref={'flatList'}
                     data={db}
                     renderItem={({ item, index }) => {
                         return (
-                            <FlatListItems item={item} index={index} refeshParentFlatlist={this.refeshFlatList} />
+                            <FlatListItems item={item} index={index} parentFlatList={this} />
                         )
                     }}
                     keyExtractor={(item) => `${item.id}`}
                 />
+                <AddModal ref={'addModal'} parentFlatList={this}>
+
+                </AddModal>
             </View>
         );
     }
