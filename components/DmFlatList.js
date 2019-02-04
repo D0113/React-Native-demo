@@ -5,7 +5,8 @@ import {
     Text,
     StyleSheet,
     FlatList,
-    Image
+    Image,
+    TouchableHighlight
 } from 'react-native';
 import Swipeout from 'react-native-swipeout';
 
@@ -40,12 +41,14 @@ class FlatListItems extends Component {
                             'Are you sure you want to delete ?',
                             [
                                 { text: 'No', onPress: () => console.log('cancel pressed'), style: 'cancel' },
-                                { text: 'Yes', onPress: () => {
-                                    db.splice(this.props.index, 1);
-                                    this.props.refeshParentFlatlist(deletingRow);
-                                }}
+                                {
+                                    text: 'Yes', onPress: () => {
+                                        db.splice(this.props.index, 1);
+                                        this.props.refeshParentFlatlist(deletingRow);
+                                    }
+                                }
                             ],
-                                { cancelable: true }
+                            { cancelable: true }
                         );
                     },
                     text: 'Delete',
@@ -103,9 +106,32 @@ export default class extends Component {
         this.setState({ deletedRowKey: deletedKey });
     }
 
+    onPressAdd() {
+        alert('Press add button');
+    }
+
     render() {
         return (
             <View style={{ flex: 1, marginTop: 24 }}>
+                <View style={{
+                    backgroundColor: '#202124',
+                    height: 64,
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                }} >
+                    <TouchableHighlight
+                        style={{ marginRight: 10 }}
+                        underlayColor='#202124'
+                        onPress={this.onPressAdd}
+                    >
+                        <Image
+                            source={require('../assets/plus.png')}
+                            style={{ width: 35, height: 35 }}
+                        />
+                    </TouchableHighlight>
+                </View>
+                <View style={{ height: 1, backgroundColor: '#212121' }}></View>
                 <FlatList
                     data={db}
                     renderItem={({ item, index }) => {
