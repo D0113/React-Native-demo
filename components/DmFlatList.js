@@ -6,7 +6,8 @@ import {
     StyleSheet,
     FlatList,
     Image,
-    TouchableHighlight
+    TouchableHighlight,
+    Dimensions
 } from 'react-native';
 import Swipeout from 'react-native-swipeout';
 
@@ -14,6 +15,7 @@ import AddModal from './AddModal';
 import EditModal from './EditModal';
 
 import db from '../DB/db';
+import { getMoviesFromServer } from '../networking/Sever';
 import { create } from 'uuid-js';
 
 class FlatListItems extends Component {
@@ -122,21 +124,38 @@ export default class extends Component {
         super(props);
 
         this.state = {
-            deletedRowKey: null
+            deletedRowKey: null,
+            moviesfromServer: []
         };
 
         this.onPressAdd = this.onPressAdd.bind(this);
     }
 
-    refeshFlatList = (deletedKey, add = false) => {
-        this.setState(() => {
-            return { deletedRowKey: deletedKey };
-        });
+    componentDidMount() {
+        this.refeshDataFromServer();
+    }
 
+    refeshDataFromServer() {
+        getMoviesFromServer().then((movies) => {
+            this.setState(() => {
+                return { moviesfromServer: movies };
+            });
+        }).catch((err) => {
+            this.setState(() => {
+                return { moviesfromServer: [] };
+            });
+        });
+    }
+
+    refeshFlatList = (newId, add = false) => {
+        this.setState(() => {
+            return { deletedRowKey: newId };
+        });
         // if (add) {
         //     this.refs.flatList.scrollToEnd();
         // }
     }
+
 
     onPressAdd() {
         this.refs.addModal.showAddModal();
@@ -168,10 +187,11 @@ export default class extends Component {
                 <FlatList
                     extraData={this.state}
                     ref={'flatList'}
-                    data={db}
+                    //data={db}
+                    data={this.state.moviesfromServer}
                     renderItem={({ item, index }) => {
                         return (
-                            <FlatListItems item={item} index={index} parentFlatList={this} />
+                            <FlatListItems item={item} index={index} parentFlatList={this}/>
                         )
                     }}
                     keyExtractor={(item) => `${item.id}`}

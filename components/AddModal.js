@@ -103,7 +103,7 @@ export default class extends Component {
                         };
                         data.unshift(newMovie);
 
-                        this.props.parentFlatList.refeshFlatList(newId, true);
+                        this.props.parentFlatList.refeshFlatList(newId, true,);
                         this.refs.myModal.close();
                     }}
                 >

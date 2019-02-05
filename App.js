@@ -1,12 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, } from 'react-native';
 
-import BasicSectionList from './components/BasicSectionList';
+import DmFlatList from './components/DmFlatList';
 
 export default class App extends React.Component {
   render() {
     return (
-       <BasicSectionList />
+       <DmFlatList />
     );
   }
 }
