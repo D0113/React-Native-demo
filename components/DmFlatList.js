@@ -7,7 +7,8 @@ import {
     FlatList,
     Image,
     TouchableHighlight,
-    Dimensions
+    Dimensions,
+    RefreshControl
 } from 'react-native';
 import Swipeout from 'react-native-swipeout';
 
@@ -24,14 +25,15 @@ class FlatListItems extends Component {
 
         this.state = {
             activeRowKey: null,
-            numRe: 0
+            numRe: 0,
+            item: {}
         };
         this.refeshFlatListItem = this.refeshFlatListItem.bind(this);
     }
 
-    refeshFlatListItem() {
+    refeshFlatListItem(movie) {
         this.setState((preState) => {
-            return {numRe: preState.numRe + 1};
+            return {item: movie};
         });
     }
 
@@ -53,7 +55,9 @@ class FlatListItems extends Component {
                         // Alert.alert(
                         //     'Update'
                         // );
-                        this.props.parentFlatList.refs.editModal.showEditModal(db[this.props.index], this);
+                       // this.props.parentFlatList.refs.editModal.showEditModal(db[this.props.index], this);
+                       let selectedItem = this.state.item.name ? this.state.item : this.props.item;
+                       this.props.parentFlatList.refs.editModal.showEditModal(selectedItem, this);
                     },
                     text: 'Edit',
                     type: 'primary'
@@ -97,8 +101,10 @@ class FlatListItems extends Component {
                             style={{ width: 100, height: 170, margin: 5 }}
                         />
                         <View style={{ flex: 1, flexDirection: 'column', paddingHorizontal: 8, marginTop: 5, justifyContent: 'flex-start' }}>
-                            <Text style={[styles.flatlistItem, styles.flatlistItemName, { marginBottom: 8 }]}>{this.props.item.name}</Text>
-                            <Text style={styles.flatlistItem}>{this.props.item.description}</Text>
+                            <Text style={[styles.flatlistItem, styles.flatlistItemName, { marginBottom: 8 }]}>
+                                {this.state.item.name ? this.state.item.name : this.props.item.name}
+                            </Text>
+                            <Text style={styles.flatlistItem}>{this.state.item.description ? this.state.item.description :this.props.item.description}</Text>
                         </View>
                     </View>
                     <View style={{ height: 1, backgroundColor: 'gray' }}></View>
@@ -125,7 +131,8 @@ export default class extends Component {
 
         this.state = {
             deletedRowKey: null,
-            moviesfromServer: []
+            moviesfromServer: [],
+            refreshing: false
         };
 
         this.onPressAdd = this.onPressAdd.bind(this);
@@ -136,14 +143,17 @@ export default class extends Component {
     }
 
     refeshDataFromServer() {
+        this.setState({ refreshing: true });
         getMoviesFromServer().then((movies) => {
             this.setState(() => {
                 return { moviesfromServer: movies };
             });
+            this.setState({ refreshing: false });
         }).catch((err) => {
             this.setState(() => {
-                return { moviesfromServer: [] };
+                return { moviesfromServer: [] };               
             });
+            this.setState({ refreshing: false });
         });
     }
 
@@ -161,6 +171,9 @@ export default class extends Component {
         this.refs.addModal.showAddModal();
     }
 
+    onRefresh = () => {
+        this.refeshDataFromServer();
+    }
 
     render() {
         return (
@@ -188,6 +201,12 @@ export default class extends Component {
                     extraData={this.state}
                     ref={'flatList'}
                     //data={db}
+                    refreshControl={
+                        <RefreshControl  
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.onRefresh}
+                        />
+                    }
                     data={this.state.moviesfromServer}
                     renderItem={({ item, index }) => {
                         return (

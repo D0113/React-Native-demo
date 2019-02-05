@@ -16,6 +16,7 @@ import Modal from 'react-native-modalbox';
 import Button from 'react-native-button';
 
 import data from '../DB/db';
+import { insertMoviesToServer } from '../networking/Sever';
 
 const screen = Dimensions.get('window');
 const uuidv1 = require('uuid/v1');
@@ -101,9 +102,15 @@ export default class extends Component {
                             imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUB25wJWlYSokzNLpvjkOkhds9o3iKI26IBT82kx3itReGPxN6',
                             description: this.state.newMovieDescription
                         };
-                        data.unshift(newMovie);
+                        // data.unshift(newMovie);
 
-                        this.props.parentFlatList.refeshFlatList(newId, true,);
+                        // this.props.parentFlatList.refeshFlatList(newId, true,);
+                        insertMoviesToServer(newMovie)
+                        .then((res) => {
+                            if (res) {
+                                this.props.parentFlatList.refeshDataFromServer();
+                            }
+                        })
                         this.refs.myModal.close();
                     }}
                 >

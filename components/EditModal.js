@@ -16,6 +16,7 @@ import Modal from 'react-native-modalbox';
 import Button from 'react-native-button';
 
 import data from '../DB/db';
+import { updateMoviesToServer } from '../networking/Sever';
 
 const screen = Dimensions.get('window');
 export default class extends Component {
@@ -30,7 +31,7 @@ export default class extends Component {
     }
 
     showEditModal(editingMovie, flatListItem) {
-        console.log(`editing ${JSON.stringify(editingMovie)}`);
+       // console.log(`editing ${JSON.stringify(editingMovie)}`);
         this.setState({
             id: editingMovie.id,
             movieName: editingMovie.name,
@@ -98,15 +99,30 @@ export default class extends Component {
                             return;
                         }
                         //update item
-                        const foundIndex = data.findIndex(item => this.state.id === item.id);
+                        // const foundIndex = data.findIndex(item => this.state.id === item.id);
 
-                        if (foundIndex < 0) {
-                            return;
-                        }
-                        data[foundIndex].name = this.state.movieName;
-                        data[foundIndex].description = this.state.movieDescription;
+                        // if (foundIndex < 0) {
+                        //     return;
+                        // }
+                        // data[foundIndex].name = this.state.movieName;
+                        // data[foundIndex].description = this.state.movieDescription;
 
-                        this.state.flatListItem.refeshFlatListItem();
+                        // this.state.flatListItem.refeshFlatListItem();
+                        const movie = {
+                            id: this.state.id,
+                            name: this.state.movieName,
+                            description: this.state.movieDescription
+                        };
+
+                        updateMoviesToServer(movie)
+                        .then(res => {
+                            if (res) {
+                                this.state.flatListItem.refeshFlatListItem(movie);
+                            }
+                        }).catch(err => {
+                            console.log(err);
+                        });
+
                         this.refs.myModal.close();
                     }}
                 >
